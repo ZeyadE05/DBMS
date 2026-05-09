@@ -546,7 +546,7 @@ public class DBAppTestsMS2
 		//record0: [a148, b0, c1, d0, e3, f4, g1]
 		String tableTrace0 = DBApp.getLastTrace("yba");
 		assertTrue("Select Index when all columns are indexed Should appear in the last trace.", tableTrace0.contains("Select index"));
-        assertTrue("Select Index when all columns are indexed Should report indexed columns.", tableTrace0.contains("Indexed columns:"));
+		assertTrue("Select Index when all columns are indexed Should report indexed columns.", tableTrace0.contains("Indexed columns:"));
 		assertTrue("Select Index when all columns are indexed Should report the correct set of indexed columns.", tableTrace0.contains(Arrays.toString(ConditionColumns0)));
 		assertTrue("Select Index when all columns are indexed Should not report non indexed columns.", !tableTrace0.contains("Non Indexed:"));
 		assertTrue("Select Index when all columns are indexed Should report the correct number of selected records.", tableTrace0.contains("Final count: "+1));

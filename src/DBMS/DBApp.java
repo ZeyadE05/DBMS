@@ -3,6 +3,7 @@ package DBMS;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class DBApp
 {
@@ -221,6 +222,7 @@ public class DBApp
         traceBuilder.append("Select index condition: ").append(Arrays.toString(cols)).append("->").append(Arrays.toString(vals));
 
         if (indexedColCount > 0) {
+            Collections.sort(indexedColsIntersection);
             traceBuilder.append(", Indexed columns: ").append(Arrays.toString(indexedColsIntersection.toArray()));
         }
 
@@ -297,6 +299,7 @@ public class DBApp
         }
 
         if (!nonIndexedCols.isEmpty()) {
+            Collections.sort(nonIndexedCols);
             traceBuilder.append(", Non Indexed: ").append(Arrays.toString(nonIndexedCols.toArray()));
         }
 
