@@ -68,11 +68,48 @@ public class DBApp
 	}
 
     public static ArrayList<String[]> validateRecords(String tableName) {
-        return null;
+        long startTime = System.currentTimeMillis();
+        Table t = FileManager.loadTable(tableName);
+        ArrayList<String[]> missingRecords = new ArrayList<>();
+
+        int expectedPageCount = t.getPageCount();
+
+        for (int i = 0; i < expectedPageCount; i++) {
+            Page p = FileManager.loadTablePage(tableName, i);
+            if (p == null) {
+                for (int j = 0; j < dataPageSize; j++) {
+                    missingRecords.add(new String[t.getColumnsNames().length]);
+                }
+            }
+        }
+
+        long endTime = System.currentTimeMillis();
+        String trace = "Validating records, " + missingRecords.size() + " records missing.";
+        t.addTraceColumn(trace);
+        FileManager.storeTable(tableName, t);
+        return missingRecords;
     }
 
     public static void recoverRecords(String tableName, ArrayList<String[]> missing) {
-       
+        Table t = FileManager.loadTable(tableName);
+        ArrayList<Integer> recoveredPages = new ArrayList<>();
+
+        int missingIndex = 0;
+        for (int pageNum = 0; pageNum < t.getPageCount() && missingIndex < missing.size(); pageNum++) {
+            Page existing = FileManager.loadTablePage(tableName, pageNum);
+            if (existing == null) {
+                Page p = new Page();
+                for (int j = 0; j < dataPageSize && missingIndex < missing.size(); j++) {
+                    p.insert(missing.get(missingIndex++));
+                }
+                FileManager.storeTablePage(tableName, pageNum, p);
+                recoveredPages.add(pageNum);
+            }
+        }
+
+        String trace = "Recovering " + missing.size() + " records in pages: " + recoveredPages;
+        t.addTraceColumn(trace);
+        FileManager.storeTable(tableName, t);
     }
 
     public static void createBitMapIndex(String tableName, String colName){
@@ -288,10 +325,6 @@ public class DBApp
         return result.toString();
     }
 
-    /**
-     * Java 8 workaround for String.repeat.
-     * Appends the given string to itself count times.
-     */
     public static String repeat(String str, int count) {
         if (count <= 0) {
             return "";
