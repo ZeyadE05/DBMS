@@ -109,7 +109,7 @@ public class DBApp
                 }
                 if(!found){
 
-                    BM.getBitmap().put(value,  "0".repeat(count)+ "1");
+                    BM.getBitmap().put(value,  repeat("0",count)+ "1");
                 }
                 count++;
             }
@@ -148,7 +148,7 @@ public class DBApp
             }
         }
         if(!found){
-            BM.getBitmap().put(value,  "0".repeat((pageCount-1)*dataPageSize + recordCount-1)+ "1");
+            BM.getBitmap().put(value,  repeat("0",(pageCount-1)*dataPageSize + recordCount-1)+ "1");
         }
         FileManager.storeTableIndex(tableName, colName, BM);
     }
@@ -158,7 +158,7 @@ public class DBApp
         BitmapIndex BM = FileManager.loadTableIndex(tableName, colName);
         String res = BM.getBitmap().get(value);
         if(res == null){
-            return "0".repeat(t.getRecordsCount());
+            return repeat("0",t.getRecordsCount());
         }
         return res;
     }
@@ -191,11 +191,11 @@ public class DBApp
         int indexedSelectionCount = 0;
 
         if (indexedColCount == cols.length) {
-            String res = "1".repeat(table.getRecordsCount());
+            String res = repeat("1",table.getRecordsCount());
             for (int i = 0; i < cols.length; i++) {
                 BitmapIndex BM = FileManager.loadTableIndex(tableName, cols[i]);
                 String index = BM.getBitmap().get(vals[i]);
-                if (index == null) index = "0".repeat(table.getRecordsCount());
+                if (index == null) index = repeat("0",table.getRecordsCount());
                 res = andStrings(res, index);
             }
             for (int i = 0; i < res.length(); i++) {
@@ -216,11 +216,11 @@ public class DBApp
                 }
             }
 
-            String res = "1".repeat(table.getRecordsCount());
+            String res = repeat("1",table.getRecordsCount());
             for(int i = 0; i < indexedColsList.size(); i++){
                 BitmapIndex BM = FileManager.loadTableIndex(tableName, indexedColsList.get(i));
                 String index = BM.getBitmap().get(vals[indexedColPosList.get(i)]);
-                if (index == null) index = "0".repeat(table.getRecordsCount());
+                if (index == null) index = repeat("0",table.getRecordsCount());
                 res = andStrings(res, index);
             }
 
@@ -288,5 +288,19 @@ public class DBApp
         return result.toString();
     }
 
+    /**
+     * Java 8 workaround for String.repeat.
+     * Appends the given string to itself count times.
+     */
+    public static String repeat(String str, int count) {
+        if (count <= 0) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            sb.append(str);
+        }
+        return sb.toString();
+    }
 
 }
